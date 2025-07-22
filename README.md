@@ -1,16 +1,61 @@
-## Hi there 👋
+<!DOCTYPE html>
+<html lang="km">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>ក្រុមហ៊ុនរបស់យើង</title>
+  <style>
+    body {
+      font-family: 'Khmer OS', sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f8f8f8;
+    }
+    header {
+      background: #007bff;
+      color: white;
+      padding: 20px;
+      text-align: center;
+    }
+    nav {
+      background: #0056b3;
+      color: white;
+      padding: 10px;
+      text-align: center;
+    }
+    nav a {
+      color: white;
+      margin: 0 15px;
+      text-decoration: none;
+    }
+    main {
+      padding: 20px;
+    }
+    footer {
+      background: #333;
+      color: white;
+      text-align: center;
+      padding: 10px;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ស្វាគមន៍មកកាន់ក្រុមហ៊ុនរបស់យើង</h1>
+  </header>
+  <nav>
+    <a href="#">ទំព័រដើម</a>
+    <a href="#">អំពីយើង</a>
+    <a href="#">ទំនាក់ទំនង</a>
+  </nav>
+  <main>
+    <h2>អំពីយើង</h2>
+    <p>ក្រុមហ៊ុនរបស់យើងផ្តល់សេវាកម្មគុណភាពខ្ពស់ ដើម្បីបំពេញតម្រូវការរបស់អតិថិជន។</p>
+  </main>
+  <footer>
+    &copy; 2025 ក្រុមហ៊ុនរបស់យើង - រក្សាសិទ្ធិគ្រប់យ៉ាង
+  </footer>
+</body>
+</html>
 
-<!--
-**hangpich/hangpich** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
-
-Here are some ideas to get you started:
-
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
