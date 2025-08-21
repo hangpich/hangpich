@@ -1,61 +1,1433 @@
 <!DOCTYPE html>
-<html lang="km">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ក្រុមហ៊ុនរបស់យើង</title>
-  <style>
-    body {
-      font-family: 'Khmer OS', sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f8f8f8;
-    }
-    header {
-      background: #007bff;
-      color: white;
-      padding: 20px;
-      text-align: center;
-    }
-    nav {
-      background: #0056b3;
-      color: white;
-      padding: 10px;
-      text-align: center;
-    }
-    nav a {
-      color: white;
-      margin: 0 15px;
-      text-decoration: none;
-    }
-    main {
-      padding: 20px;
-    }
-    footer {
-      background: #333;
-      color: white;
-      text-align: center;
-      padding: 10px;
-      margin-top: 20px;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kids' Learning Hub</title>
+    
+    <!-- All CSS is contained in this style block as requested -->
+    <style>
+        /* CSS variables for a vibrant, backlit, neon theme */
+        :root {
+            --primary-glow: #00ffff; /* Cyan */
+            --secondary-glow: #ff00ff; /* Magenta */
+            --accent-glow: #00ff00; /* Neon Green */
+            --background-dark: #0a0a1a; /* Very Dark Blue */
+            --card-dark: #1a1a30; /* Darker Blue */
+            --text-light: #e0e0e0;
+            --border-radius: 1.5rem;
+            --shadow: 0 0 15px var(--primary-glow);
+            --font-family: 'Inter', sans-serif;
+        }
+
+        /* Basic styles for the entire page */
+        body {
+            font-family: var(--font-family);
+            background-color: var(--background-dark);
+            color: var(--text-light);
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            overflow-x: hidden;
+            flex-direction: column;
+        }
+
+        /* Container for the entire application */
+        #app-container {
+            width: 95%;
+            max-width: 1200px;
+            background-color: var(--card-dark);
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 20px var(--primary-glow), inset 0 0 10px var(--primary-glow);
+            padding: 2rem;
+            display: grid;
+            grid-template-areas:
+                "header"
+                "lessons";
+            grid-template-rows: auto 1fr;
+            gap: 2rem;
+            transition: all 0.3s ease;
+            border: 2px solid var(--primary-glow);
+        }
+
+        /* Responsive layout for larger screens */
+        @media (min-width: 768px) {
+            #app-container {
+                grid-template-areas:
+                    "header"
+                    "lessons";
+                grid-template-columns: 1fr;
+                grid-template-rows: auto 1fr;
+            }
+        }
+
+        /* Header styling with neon glow */
+        .app-header {
+            grid-area: header;
+            text-align: center;
+            padding-bottom: 1rem;
+            border-bottom: 2px solid var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary-glow), 0 0 10px var(--primary-glow);
+        }
+        
+        .app-header h1 {
+            font-size: 3.5rem;
+            font-weight: bold;
+            color: var(--text-light);
+            text-shadow: 0 0 10px var(--primary-glow), 0 0 20px var(--primary-glow);
+            margin: 0;
+        }
+        
+        .app-header p {
+            font-size: 1.25rem;
+            color: var(--text-light);
+            margin-top: 0.5rem;
+            opacity: 0.8;
+        }
+
+        /* Main lessons grid */
+        .lessons-grid {
+            grid-area: lessons;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 1.5rem;
+        }
+
+        /* Individual lesson card styling with glow */
+        .lesson-card {
+            background-color: var(--background-dark);
+            border-radius: var(--border-radius);
+            padding: 1.5rem;
+            box-shadow: 0 0 10px var(--accent-glow);
+            text-align: center;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: 1px solid var(--accent-glow);
+        }
+
+        .lesson-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 0 20px var(--accent-glow), inset 0 0 10px var(--accent-glow);
+        }
+
+        .lesson-card h3 {
+            font-size: 1.75rem;
+            margin: 0.5rem 0;
+            color: var(--accent-glow);
+            text-shadow: 0 0 5px var(--accent-glow);
+        }
+        
+        .lesson-card .icon {
+            font-size: 3rem;
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--secondary-glow);
+            text-shadow: 0 0 5px var(--secondary-glow);
+        }
+
+        /* Modal for lesson content */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 100;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0, 0, 0, 0.85);
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .modal-content {
+            background-color: var(--card-dark);
+            padding: 2rem;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 20px var(--secondary-glow), inset 0 0 10px var(--secondary-glow);
+            position: relative;
+            max-width: 800px;
+            width: 90%;
+            text-align: center;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            border: 2px solid var(--secondary-glow);
+        }
+
+        .modal-content h2 {
+            font-size: 2.5rem;
+            color: var(--secondary-glow);
+            margin-bottom: 1rem;
+            text-shadow: 0 0 5px var(--secondary-glow);
+        }
+        
+        .modal-content p {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            min-height: 100px; /* Ensure content area is visible */
+            color: var(--text-light);
+            opacity: 0.9;
+        }
+        
+        .modal-content .button-container {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .modal-content .llm-button {
+            padding: 0.75rem 1.5rem;
+            border: 1px solid;
+            border-radius: 1rem;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s, background-color 0.2s;
+        }
+
+        .modal-content .llm-button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 0 15px;
+        }
+        
+        .modal-content .llm-button.teach-me {
+            background-color: #1a1a30;
+            border-color: var(--accent-glow);
+            color: var(--accent-glow);
+            box-shadow: 0 0 5px var(--accent-glow);
+        }
+        .modal-content .llm-button.teach-me:hover {
+            background-color: var(--accent-glow);
+            color: var(--background-dark);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .modal-content .llm-button.story {
+            background-color: #1a1a30;
+            border-color: var(--primary-glow);
+            color: var(--primary-glow);
+            box-shadow: 0 0 5px var(--primary-glow);
+        }
+        .modal-content .llm-button.story:hover {
+            background-color: var(--primary-glow);
+            color: var(--background-dark);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .modal-content .llm-button.read-aloud {
+            background-color: #1a1a30;
+            border-color: var(--secondary-glow);
+            color: var(--secondary-glow);
+            box-shadow: 0 0 5px var(--secondary-glow);
+        }
+        .modal-content .llm-button.read-aloud:hover {
+            background-color: var(--secondary-glow);
+            color: var(--background-dark);
+            box-shadow: 0 0 15px var(--secondary-glow);
+        }
+
+        .modal-content .llm-button.draw-image {
+            background-color: #1a1a30;
+            border-color: #ff9900; /* Neon Orange */
+            color: #ff9900;
+            box-shadow: 0 0 5px #ff9900;
+        }
+        .modal-content .llm-button.draw-image:hover {
+            background-color: #ff9900;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #ff9900;
+        }
+
+        .modal-content .llm-button.quiz {
+            background-color: #1a1a30;
+            border-color: #ff3333; /* Neon Red */
+            color: #ff3333;
+            box-shadow: 0 0 5px #ff3333;
+        }
+        .modal-content .llm-button.quiz:hover {
+            background-color: #ff3333;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #ff3333;
+        }
+
+        .modal-content .llm-button.hint {
+            background-color: #1a1a30;
+            border-color: #ffff00; /* Neon Yellow */
+            color: #ffff00;
+            box-shadow: 0 0 5px #ffff00;
+        }
+        .modal-content .llm-button.hint:hover {
+            background-color: #ffff00;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px var(--background-dark);
+        }
+        
+        .modal-content .llm-button.chat {
+            background-color: #1a1a30;
+            border-color: #8be9fd; /* Lighter Cyan */
+            color: #8be9fd;
+            box-shadow: 0 0 5px #8be9fd;
+        }
+        .modal-content .llm-button.chat:hover {
+            background-color: #8be9fd;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #8be9fd;
+        }
+        
+        .modal-content .llm-button.summary {
+            background-color: #1a1a30;
+            border-color: #c900c9; /* Purple */
+            color: #c900c9;
+            box-shadow: 0 0 5px #c900c9;
+        }
+        .modal-content .llm-button.summary:hover {
+            background-color: #c900c9;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #c900c9;
+        }
+        
+        .modal-content .llm-button.new-idea {
+            background-color: #1a1a30;
+            border-color: #90ee90; /* Light Green */
+            color: #90ee90;
+            box-shadow: 0 0 5px #90ee90;
+        }
+        .modal-content .llm-button.new-idea:hover {
+            background-color: #90ee90;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #90ee90;
+        }
+        
+        .modal-content .llm-button.adventure,
+        .modal-content .llm-button.emoji,
+        .modal-content .llm-button.what-if,
+        .modal-content .llm-button.story-blanks {
+            background-color: #1a1a30;
+            border-color: #ff8c00; /* Dark Orange */
+            color: #ff8c00;
+            box-shadow: 0 0 5px #ff8c00;
+        }
+        
+        .modal-content .llm-button.adventure:hover,
+        .modal-content .llm-button.emoji:hover,
+        .modal-content .llm-button.what-if:hover,
+        .modal-content .llm-button.story-blanks:hover {
+            background-color: #ff8c00;
+            color: var(--background-dark);
+            box-shadow: 0 0 15px #ff8c00;
+        }
+
+        .modal .close-btn {
+            position: absolute;
+            top: 1rem;
+            right: 1.5rem;
+            font-size: 2rem;
+            color: var(--text-light);
+            text-shadow: 0 0 5px var(--text-light);
+            cursor: pointer;
+            transition: color 0.2s, text-shadow 0.2s;
+        }
+        
+        .modal .close-btn:hover {
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        
+        .image-container {
+            margin-top: 1.5rem;
+        }
+        
+        .generated-image {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--border-radius);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .loading-spinner {
+            border: 8px solid #333;
+            border-top: 8px solid var(--primary-glow);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 20px auto;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Quiz specific styles with neon flair */
+        .quiz-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+
+        .quiz-question {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 1rem;
+            color: var(--primary-glow);
+            text-shadow: 0 0 5px var(--primary-glow);
+        }
+
+        .quiz-choices {
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            width: 100%;
+        }
+
+        .quiz-choice {
+            padding: 0.75rem 1.5rem;
+            border-radius: 1rem;
+            border: 2px solid var(--accent-glow);
+            background-color: #1a1a30;
+            color: var(--accent-glow);
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            box-shadow: 0 0 5px var(--accent-glow);
+        }
+        
+        .quiz-choice:hover {
+            background-color: var(--accent-glow);
+            color: var(--background-dark);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .quiz-choice.correct {
+            background-color: var(--accent-glow);
+            color: var(--background-dark);
+            border-color: var(--accent-glow);
+            box-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .quiz-choice.incorrect {
+            background-color: #ff3333; /* Neon Red */
+            color: var(--background-dark);
+            border-color: #ff3333;
+            box-shadow: 0 0 15px #ff3333;
+        }
+        
+        .quiz-feedback {
+            font-size: 1.5rem;
+            margin-top: 1rem;
+            font-weight: bold;
+            color: var(--secondary-glow);
+            text-shadow: 0 0 5px var(--secondary-glow);
+        }
+        
+        .hint-container {
+            font-style: italic;
+            font-size: 1rem;
+            color: var(--text-light);
+            margin-top: 1rem;
+            min-height: 25px; /* Reserve space to prevent layout shift */
+            opacity: 0.8;
+        }
+        
+        /* Chatbot specific styles */
+        .chatbot-container {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+
+        .chatbot-messages {
+            height: 400px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            padding: 1rem;
+            background-color: #111122;
+            border-radius: 1rem;
+            border: 2px solid var(--primary-glow);
+        }
+
+        .chatbot-message {
+            display: flex;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .chatbot-message.user {
+            justify-content: flex-end;
+        }
+
+        .chatbot-message.ai {
+            justify-content: flex-start;
+        }
+
+        .chatbot-message .avatar {
+            font-size: 2rem;
+            flex-shrink: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .chatbot-message .message-bubble {
+            padding: 0.75rem 1rem;
+            border-radius: 1rem;
+            max-width: 80%;
+            word-wrap: break-word;
+            line-height: 1.4;
+        }
+
+        .chatbot-message.user .message-bubble {
+            background-color: #4a4a60;
+            color: var(--text-light);
+            border-bottom-right-radius: 0.25rem;
+        }
+
+        .chatbot-message.ai .message-bubble {
+            background-color: #1a1a30;
+            color: var(--text-light);
+            border: 1px solid var(--accent-glow);
+            box-shadow: 0 0 5px var(--accent-glow);
+            border-bottom-left-radius: 0.25rem;
+        }
+
+        .chatbot-form {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .chatbot-form input[type="text"] {
+            flex-grow: 1;
+            padding: 0.75rem;
+            border: 1px solid var(--primary-glow);
+            border-radius: 1rem;
+            font-size: 1rem;
+            background-color: #1a1a30;
+            color: var(--text-light);
+            box-shadow: inset 0 0 5px var(--primary-glow);
+        }
+
+        .chatbot-form button {
+            background-color: var(--primary-glow);
+            color: var(--background-dark);
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 1rem;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: bold;
+            transition: background-color 0.2s, box-shadow 0.2s;
+            box-shadow: 0 0 10px var(--primary-glow);
+        }
+
+        .chatbot-form button:hover {
+            background-color: #99ffff;
+            box-shadow: 0 0 20px var(--primary-glow);
+        }
+    </style>
 </head>
 <body>
-  <header>
-    <h1>ស្វាគមន៍មកកាន់ក្រុមហ៊ុនរបស់យើង</h1>
-  </header>
-  <nav>
-    <a href="#">ទំព័រដើម</a>
-    <a href="#">អំពីយើង</a>
-    <a href="#">ទំនាក់ទំនង</a>
-  </nav>
-  <main>
-    <h2>អំពីយើង</h2>
-    <p>ក្រុមហ៊ុនរបស់យើងផ្តល់សេវាកម្មគុណភាពខ្ពស់ ដើម្បីបំពេញតម្រូវការរបស់អតិថិជន។</p>
-  </main>
-  <footer>
-    &copy; 2025 ក្រុមហ៊ុនរបស់យើង - រក្សាសិទ្ធិគ្រប់យ៉ាង
-  </footer>
+
+    <!-- Main application container -->
+    <div id="app-container">
+        
+        <!-- Header section -->
+        <header class="app-header">
+            <h1>Kids' Learning Hub</h1>
+            <p>A fun place to learn new things!</p>
+        </header>
+
+        <!-- Main content area for lessons -->
+        <main class="lessons-grid" id="lessons-grid">
+            <!-- Lesson cards will be dynamically inserted here -->
+        </main>
+
+    </div>
+
+    <!-- Modal for displaying lesson details -->
+    <div id="lesson-modal" class="modal">
+        <div class="modal-content">
+            <span class="close-btn">&times;</span>
+            <h2 id="modal-title"></h2>
+            <div id="modal-body">
+                <p id="modal-content"></p>
+                <div id="quiz-container" class="quiz-container" style="display: none;">
+                    <p id="quiz-question" class="quiz-question"></p>
+                    <div id="quiz-choices" class="quiz-choices"></div>
+                    <div id="quiz-feedback" class="quiz-feedback"></div>
+                    <div id="hint-container" class="hint-container"></div>
+                </div>
+                <!-- Chatbot container -->
+                <div id="chatbot-container" class="chatbot-container" style="display: none;">
+                    <div id="chatbot-messages" class="chatbot-messages"></div>
+                    <form id="chatbot-form" class="chatbot-form">
+                        <input type="text" id="chatbot-input" placeholder="Ask about the lesson..." required>
+                        <button type="submit">Send</button>
+                    </form>
+                </div>
+            </div>
+            <div id="llm-features-container" class="button-container">
+                <button id="teach-me-more-btn" class="llm-button teach-me">Teach Me More ✨</button>
+                <button id="tell-story-btn" class="llm-button story">Tell Me a Story ✨</button>
+                <button id="read-aloud-btn" class="llm-button read-aloud">Read Aloud 🗣️</button>
+                <button id="draw-image-btn" class="llm-button draw-image">Draw an Image 🖼️</button>
+                <button id="quiz-me-btn" class="llm-button quiz">Quiz Me ✨</button>
+                <button id="get-hint-btn" class="llm-button hint" style="display: none;">Get a Hint ✨</button>
+                <button id="ask-ai-btn" class="llm-button chat">Ask the AI 🤖</button>
+                <button id="generate-rhyme-btn" class="llm-button story">Generate a Rhyme ✨</button>
+                <button id="translate-word-btn" class="llm-button teach-me" style="display: none;">Translate a Word ✨</button>
+                <button id="summarize-btn" class="llm-button summary">Summarize Lesson ✨</button>
+                <button id="new-lesson-idea-btn" class="llm-button new-idea">New Lesson Idea ✨</button>
+                <button id="start-adventure-btn" class="llm-button adventure">Start an Adventure ✨</button>
+                <button id="emoji-challenge-btn" class="llm-button emoji">Emoji Challenge ✨</button>
+                <!-- NEW FEATURES ADDED BELOW -->
+                <button id="what-if-btn" class="llm-button what-if">What If? ✨</button>
+                <button id="story-blanks-btn" class="llm-button story-blanks">Story Blanks ✨</button>
+            </div>
+            <div id="loading-spinner" style="display: none;" class="loading-spinner"></div>
+            <div id="image-container" class="image-container"></div>
+        </div>
+    </div>
+    
+    <!-- JavaScript libraries from CDN for Firebase -->
+    <script type="module">
+        // --- Core Application Logic ---
+
+        // Mock lesson data (this could be fetched from a server or database)
+        const lessons = [
+            { id: 1, title: "Math: Counting", icon: "🔢", content: "Let's learn to count to ten! One, two, three, four, five, six, seven, eight, nine, ten. Practice counting objects around you to get better!" },
+            { id: 2, title: "Science: Animals", icon: "🐾", content: "Animals come in all shapes and sizes. They can be mammals, birds, fish, or insects. What is your favorite animal and why?" },
+            { id: 3, title: "Art: Colors", icon: "🎨", content: "Red, yellow, and blue are the primary colors. Mix them together to create new colors like orange, green, and purple. Have fun with a coloring book!" },
+            { id: 4, title: "Music: Instruments", icon: "🥁", content: "Music is made with many different instruments. Some are drums you hit, some are guitars you strum, and some are pianos you play with your fingers." },
+            { id: 5, title: "Language: Greetings", icon: "🗣️", content: "Learning to say 'hello' is a great first step! In Spanish, it's 'Hola'. In French, it's 'Bonjour'. In Japanese, it's 'Konnichiwa'." },
+            { id: 6, title: "Code: HTML", icon: "💻", content: "HTML stands for HyperText Markup Language. It's the building block of the web! Think of it like the skeleton of a website. It uses special words called 'tags' to tell the browser how to display text, images, and links." }
+        ];
+
+        // Get elements from the DOM
+        const lessonsGrid = document.getElementById('lessons-grid');
+        const lessonModal = document.getElementById('lesson-modal');
+        const modalTitle = document.getElementById('modal-title');
+        const modalContent = document.getElementById('modal-content');
+        const quizContainer = document.getElementById('quiz-container');
+        const quizQuestionEl = document.getElementById('quiz-question');
+        const quizChoicesEl = document.getElementById('quiz-choices');
+        const quizFeedbackEl = document.getElementById('quiz-feedback');
+        const hintContainer = document.getElementById('hint-container');
+        const chatbotContainer = document.getElementById('chatbot-container');
+        const chatbotMessagesEl = document.getElementById('chatbot-messages');
+        const chatbotForm = document.getElementById('chatbot-form');
+        const chatbotInput = document.getElementById('chatbot-input');
+        const modalCloseBtn = document.querySelector('#lesson-modal .close-btn');
+        const teachMeMoreBtn = document.getElementById('teach-me-more-btn');
+        const tellStoryBtn = document.getElementById('tell-story-btn');
+        const readAloudBtn = document.getElementById('read-aloud-btn');
+        const drawImageBtn = document.getElementById('draw-image-btn');
+        const quizMeBtn = document.getElementById('quiz-me-btn');
+        const getHintBtn = document.getElementById('get-hint-btn');
+        const askAIBtn = document.getElementById('ask-ai-btn');
+        const generateRhymeBtn = document.getElementById('generate-rhyme-btn');
+        const translateWordBtn = document.getElementById('translate-word-btn');
+        const summarizeBtn = document.getElementById('summarize-btn');
+        const newLessonIdeaBtn = document.getElementById('new-lesson-idea-btn');
+        const startAdventureBtn = document.getElementById('start-adventure-btn');
+        const emojiChallengeBtn = document.getElementById('emoji-challenge-btn');
+        // NEW buttons
+        const whatIfBtn = document.getElementById('what-if-btn');
+        const storyBlanksBtn = document.getElementById('story-blanks-btn');
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const imageContainer = document.getElementById('image-container');
+        
+        let currentLessonTitle = "";
+        let currentLessonContent = "";
+        let isQuizDisplayed = false;
+        let isAdventureDisplayed = false;
+        let isEmojiChallengeDisplayed = false;
+        let chatbotHistory = [];
+        let emojiAnswer = "";
+
+        // Function to render lesson cards on the page
+        function renderLessons() {
+            lessonsGrid.innerHTML = '';
+            lessons.forEach(lesson => {
+                const card = document.createElement('div');
+                card.classList.add('lesson-card');
+                card.innerHTML = `
+                    <span class="icon">${lesson.icon}</span>
+                    <h3>${lesson.title}</h3>
+                `;
+                card.addEventListener('click', () => showLesson(lesson));
+                lessonsGrid.appendChild(card);
+            });
+        }
+
+        // Function to display lesson content in a modal
+        function showLesson(lesson) {
+            currentLessonTitle = lesson.title;
+            currentLessonContent = lesson.content;
+            modalTitle.textContent = lesson.title;
+            modalContent.textContent = lesson.content;
+            modalContent.style.display = 'block';
+            quizContainer.style.display = 'none';
+            chatbotContainer.style.display = 'none';
+            imageContainer.innerHTML = ''; // Clear any previous images
+            getHintBtn.style.display = 'none'; // Hide hint button by default
+            hintContainer.textContent = ''; // Clear hint text
+            isQuizDisplayed = false;
+            isAdventureDisplayed = false;
+            isEmojiChallengeDisplayed = false;
+            lessonModal.style.display = 'flex';
+            
+            // Show/hide specific buttons based on lesson type
+            if (lesson.title.includes('Language')) {
+                translateWordBtn.style.display = 'inline-block';
+            } else {
+                translateWordBtn.style.display = 'none';
+            }
+            
+            // Reset chatbot history for the new lesson
+            chatbotHistory = [
+                { role: "user", parts: [{ text: `You are a friendly and helpful AI tutor for children aged 5-8. The current lesson topic is "${currentLessonTitle}" and the content is: "${currentLessonContent}". Respond to questions and prompts in a simple, encouraging, and clear manner, using a tone appropriate for children.` }] }
+            ];
+        }
+
+        // Close modal when the close button is clicked
+        modalCloseBtn.addEventListener('click', () => {
+            lessonModal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside of it
+        window.addEventListener('click', (event) => {
+            if (event.target === lessonModal) {
+                lessonModal.style.display = 'none';
+            }
+        });
+        
+        // --- Gemini API Integration for Dynamic Content ---
+        
+        /**
+         * Helper function to perform API call with exponential backoff.
+         */
+        async function fetchWithRetry(url, options, retries = 3, delay = 1000) {
+            for (let i = 0; i < retries; i++) {
+                try {
+                    const response = await fetch(url, options);
+                    if (response.ok) {
+                        return await response.json();
+                    }
+                    if (response.status === 429) {
+                        console.warn(`Rate limit exceeded. Retrying in ${delay}ms...`);
+                        await new Promise(res => setTimeout(res, delay));
+                        delay *= 2; // Exponential backoff
+                    } else {
+                        throw new Error(`API error: ${response.statusText}`);
+                    }
+                } catch (error) {
+                    if (i === retries - 1) throw error;
+                    console.error("Fetch error, retrying:", error);
+                }
+            }
+            throw new Error('All retries failed.');
+        }
+
+        /**
+         * Converts base64 audio data to an ArrayBuffer.
+         */
+        function base64ToArrayBuffer(base64) {
+            const binaryString = atob(base64);
+            const len = binaryString.length;
+            const bytes = new Uint8Array(len);
+            for (let i = 0; i < len; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        /**
+         * Converts PCM audio data to a WAV file Blob.
+         * The API returns signed 16-bit PCM.
+         */
+        function pcmToWav(pcmData, sampleRate) {
+            const numChannels = 1;
+            const bytesPerSample = 2;
+            const blockAlign = numChannels * bytesPerSample;
+            const byteRate = sampleRate * numChannels * bytesPerSample;
+            const dataSize = pcmData.length * bytesPerSample;
+            
+            const buffer = new ArrayBuffer(44 + dataSize);
+            const view = new DataView(buffer);
+
+            let offset = 0;
+            const writeString = (str) => {
+                for (let i = 0; i < str.length; i++) {
+                    view.setUint8(offset + i, str.charCodeAt(i));
+                }
+                offset += str.length;
+            };
+
+            // RIFF header
+            writeString('RIFF');
+            view.setUint32(offset, 36 + dataSize, true); offset += 4;
+            writeString('WAVE');
+
+            // fmt chunk
+            writeString('fmt ');
+            view.setUint32(offset, 16, true); offset += 4;
+            view.setUint16(offset, 1, true); offset += 2; // Audio format (1 = PCM)
+            view.setUint16(offset, numChannels, true); offset += 2;
+            view.setUint32(offset, sampleRate, true); offset += 4;
+            view.setUint32(offset, byteRate, true); offset += 4;
+            view.setUint16(offset, blockAlign, true); offset += 2;
+            view.setUint16(offset, bytesPerSample * 8, true); offset += 2;
+
+            // data chunk
+            writeString('data');
+            view.setUint32(offset, dataSize, true); offset += 4;
+            
+            // Write PCM data
+            for (let i = 0; i < pcmData.length; i++) {
+                view.setInt16(offset, pcmData[i], true);
+                offset += 2;
+            }
+
+            return new Blob([view], { type: 'audio/wav' });
+        }
+
+
+        /**
+         * Generates and displays educational content using the Gemini API.
+         * @param {string} promptText The prompt to send to the LLM.
+         * @param {string} type The type of content to generate ('text' or 'image').
+         */
+        async function generateGeminiContent(promptText, type) {
+            loadingSpinner.style.display = 'block';
+            modalContent.textContent = '';
+            imageContainer.innerHTML = '';
+            modalContent.style.display = 'block';
+            quizContainer.style.display = 'none';
+            chatbotContainer.style.display = 'none';
+            getHintBtn.style.display = 'none'; // Hide hint button by default
+            hintContainer.textContent = ''; // Clear hint text
+            isQuizDisplayed = false;
+            isAdventureDisplayed = false;
+            isEmojiChallengeDisplayed = false;
+            
+            const buttons = [teachMeMoreBtn, tellStoryBtn, readAloudBtn, drawImageBtn, quizMeBtn, getHintBtn, askAIBtn, generateRhymeBtn, translateWordBtn, summarizeBtn, newLessonIdeaBtn, startAdventureBtn, emojiChallengeBtn, whatIfBtn, storyBlanksBtn];
+            buttons.forEach(btn => btn.disabled = true);
+            
+            try {
+                if (type === 'text') {
+                    const chatHistory = [];
+                    chatHistory.push({ role: "user", parts: [{ text: promptText }] });
+                    const payload = { contents: chatHistory };
+                    const apiKey = ""
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                    const result = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+
+                    if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                        const generatedText = result.candidates[0].content.parts[0].text;
+                        modalContent.textContent = generatedText;
+                    } else {
+                        modalContent.textContent = "Oops! I couldn't generate new content right now. Please try again.";
+                    }
+                } else if (type === 'image') {
+                    const payload = { instances: { prompt: `A cute, cartoon-style illustration for children of ${promptText}. The image should be colorful, simple, and friendly.` }, parameters: { "sampleCount": 1} };
+                    const apiKey = ""
+                    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-002:predict?key=${apiKey}`;
+
+                    const result = await fetchWithRetry(apiUrl, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(payload)
+                    });
+                    
+                    if (result.predictions && result.predictions.length > 0 && result.predictions[0].bytesBase64Encoded) {
+                        const imageUrl = `data:image/png;base64,${result.predictions[0].bytesBase64Encoded}`;
+                        const imgElement = document.createElement('img');
+                        imgElement.src = imageUrl;
+                        imgElement.classList.add('generated-image');
+                        imageContainer.innerHTML = '';
+                        imageContainer.appendChild(imgElement);
+                    } else {
+                        modalContent.textContent = "Oops! I couldn't draw a picture right now. Please try again.";
+                    }
+                }
+            } catch (error) {
+                console.error("Error generating content from Gemini API:", error);
+                modalContent.textContent = "An error occurred while generating content. Please check your internet connection and try again.";
+            } finally {
+                loadingSpinner.style.display = 'none';
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+        
+        /**
+         * Generates and plays audio using the Gemini TTS API.
+         * The API returns raw PCM data that needs to be converted to a WAV Blob.
+         * @param {string} text The text to convert to speech.
+         */
+        async function generateTTS(text) {
+            loadingSpinner.style.display = 'block';
+            readAloudBtn.disabled = true;
+            
+            try {
+                // IMPORTANT: The prompt needs to guide the model to speak the text.
+                const prompt = `Say in a clear and friendly voice: ${text}`;
+                const payload = {
+                    contents: [{
+                        parts: [{ text: prompt }]
+                    }],
+                    generationConfig: {
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: {
+                                prebuiltVoiceConfig: { voiceName: "Puck" }
+                            }
+                        }
+                    },
+                    model: "gemini-2.5-flash-preview-tts"
+                };
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-tts:generateContent?key=${apiKey}`;
+
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                const part = result?.candidates?.[0]?.content?.parts?.[0];
+                const audioData = part?.inlineData?.data;
+                const mimeType = part?.inlineData?.mimeType;
+
+                if (audioData && mimeType && mimeType.startsWith("audio/")) {
+                    // Extract the sample rate from the mimeType string
+                    const sampleRateMatch = mimeType.match(/rate=(\d+)/);
+                    const sampleRate = sampleRateMatch ? parseInt(sampleRateMatch[1], 10) : 16000; // Default to 16kHz if not found
+                    const pcmData = base64ToArrayBuffer(audioData);
+                    const pcm16 = new Int16Array(pcmData);
+                    const wavBlob = pcmToWav(pcm16, sampleRate);
+                    const audioUrl = URL.createObjectURL(wavBlob);
+                    
+                    const audio = new Audio(audioUrl);
+                    audio.play();
+                } else {
+                    console.error("Audio generation failed:", result);
+                    modalContent.textContent = "I couldn't read that out loud right now. Please try again."
+                }
+                
+            } catch (error) {
+                console.error("Error generating audio:", error);
+                modalContent.textContent = "An error occurred while trying to read out loud. Please try again."
+            } finally {
+                loadingSpinner.style.display = 'none';
+                readAloudBtn.disabled = false;
+            }
+        }
+        
+        /**
+         * Generates a quiz question using the Gemini API and displays it.
+         */
+        async function generateQuiz() {
+            loadingSpinner.style.display = 'block';
+            modalContent.style.display = 'none';
+            imageContainer.innerHTML = '';
+            quizContainer.style.display = 'none';
+            chatbotContainer.style.display = 'none';
+            getHintBtn.style.display = 'none'; // Hide hint button initially
+            
+            const buttons = [teachMeMoreBtn, tellStoryBtn, readAloudBtn, drawImageBtn, quizMeBtn, askAIBtn, generateRhymeBtn, translateWordBtn, summarizeBtn, newLessonIdeaBtn, startAdventureBtn, emojiChallengeBtn, whatIfBtn, storyBlanksBtn];
+            buttons.forEach(btn => btn.disabled = true);
+            
+            try {
+                const prompt = `Based on the following topic and content, create a single, simple multiple-choice quiz question for a child aged 5-8. The question should have a question string, three choice strings, and the correct answer string.
+
+                Topic: ${currentLessonTitle}
+                Content: ${currentLessonContent}
+                
+                Please format your response as a JSON object with the following schema:
+                { "question": string, "choices": [string, string, string], "answer": string }
+                `;
+                
+                const chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "question": { "type": "STRING" },
+                                "choices": { "type": "ARRAY", "items": { "type": "STRING" } },
+                                "answer": { "type": "STRING" }
+                            }
+                        }
+                    }
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    try {
+                        const jsonString = result.candidates[0].content.parts[0].text;
+                        // FIX: Sanitize the JSON string to remove trailing backticks or other invalid characters
+                        const cleanedJsonString = jsonString.replace(/`$/, '');
+                        const quizData = JSON.parse(cleanedJsonString);
+                        displayQuiz(quizData);
+                        isQuizDisplayed = true;
+                    } catch (e) {
+                        console.error("Failed to parse JSON for quiz:", e);
+                        modalContent.textContent = "Oops! I couldn't generate a quiz right now because the response was not valid. Please try again.";
+                        modalContent.style.display = 'block';
+                    }
+                } else {
+                    modalContent.textContent = "Oops! I couldn't generate a quiz right now. Please try again.";
+                    modalContent.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error generating quiz from Gemini API:", error);
+                modalContent.textContent = "An error occurred while generating the quiz. Please check your internet connection and try again.";
+                modalContent.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+                buttons.forEach(btn => btn.disabled = false);
+                if (isQuizDisplayed) {
+                    getHintBtn.style.display = 'inline-block';
+                }
+            }
+        }
+
+        /**
+         * Generates a hint for the current quiz question.
+         */
+        async function generateHint() {
+            loadingSpinner.style.display = 'block';
+            getHintBtn.disabled = true;
+            hintContainer.textContent = ''; // Clear previous hint
+            
+            try {
+                const prompt = `Based on the following lesson content and quiz question, provide a short, simple, and friendly hint for a child. The hint should help them think about the answer without directly revealing it.
+
+                Lesson Content: ${currentLessonContent}
+                Quiz Question: ${quizQuestionEl.textContent}
+                
+                Hint:`; // The prompt ends with "Hint:" to guide the model's response
+                
+                const chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = { contents: chatHistory };
+                const apiKey = ""
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const hintText = result.candidates[0].content.parts[0].text;
+                    hintContainer.textContent = hintText.trim();
+                } else {
+                    hintContainer.textContent = "Sorry, I can't think of a good hint right now. Try your best!";
+                }
+            } catch (error) {
+                console.error("Error generating hint from Gemini API:", error);
+                hintContainer.textContent = "An error occurred while generating the hint.";
+            } finally {
+                loadingSpinner.style.display = 'none';
+                getHintBtn.disabled = false;
+            }
+        }
+
+
+        /**
+         * Displays the quiz question and choices.
+         */
+        function displayQuiz(quizData) {
+            modalContent.style.display = 'none';
+            quizContainer.style.display = 'flex';
+            quizQuestionEl.textContent = quizData.question;
+            quizChoicesEl.innerHTML = '';
+            quizFeedbackEl.textContent = '';
+            hintContainer.textContent = '';
+
+            // Check if quizData and its choices property exist and is an array before iterating.
+            if (quizData && quizData.choices && Array.isArray(quizData.choices)) {
+                quizData.choices.forEach(choice => {
+                    const choiceBtn = document.createElement('button');
+                    choiceBtn.classList.add('quiz-choice');
+                    choiceBtn.textContent = choice;
+                    choiceBtn.addEventListener('click', () => checkAnswer(choice, quizData.answer, quizChoicesEl));
+                    quizChoicesEl.appendChild(choiceBtn);
+                });
+            } else {
+                console.error("Invalid quiz data received:", quizData);
+                modalContent.textContent = "Oops! I received some invalid quiz data. Please try again.";
+                modalContent.style.display = 'block';
+                quizContainer.style.display = 'none';
+            }
+        }
+        
+        /**
+         * Checks the user's answer and provides feedback.
+         */
+        function checkAnswer(selectedChoice, correctAnswer, choicesContainer) {
+            // Disable all choice buttons and hint button after selection
+            Array.from(choicesContainer.children).forEach(btn => btn.disabled = true);
+            getHintBtn.disabled = true;
+            
+            if (selectedChoice === correctAnswer) {
+                quizFeedbackEl.textContent = "Correct! 🎉";
+                // Find the correct button and mark it
+                Array.from(choicesContainer.children).forEach(btn => {
+                    if (btn.textContent === selectedChoice) {
+                        btn.classList.add('correct');
+                    }
+                });
+            } else {
+                quizFeedbackEl.textContent = "Not quite. Try again! 🤔";
+                // Mark the selected button as incorrect and the correct one as correct
+                Array.from(choicesContainer.children).forEach(btn => {
+                    if (btn.textContent === selectedChoice) {
+                        btn.classList.add('incorrect');
+                    }
+                    if (btn.textContent === correctAnswer) {
+                        btn.classList.add('correct');
+                    }
+                });
+            }
+        }
+        
+        /**
+         * Opens the chatbot UI and hides other content.
+         */
+        function openChatbot() {
+            modalContent.style.display = 'none';
+            quizContainer.style.display = 'none';
+            imageContainer.innerHTML = '';
+            chatbotContainer.style.display = 'flex';
+            isQuizDisplayed = false;
+            isAdventureDisplayed = false;
+            isEmojiChallengeDisplayed = false;
+        }
+        
+        /**
+         * Adds a message to the chatbot's display.
+         */
+        function addChatMessage(role, message) {
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chatbot-message', role);
+            const avatar = role === 'user' ? '👤' : '🤖';
+            messageElement.innerHTML = `
+                <div class="avatar">${avatar}</div>
+                <div class="message-bubble">${message}</div>
+            `;
+            chatbotMessagesEl.appendChild(messageElement);
+            chatbotMessagesEl.scrollTop = chatbotMessagesEl.scrollHeight; // Scroll to bottom
+        }
+
+        /**
+         * Handles sending a message to the Gemini chatbot.
+         */
+        async function handleChatbotMessage(e) {
+            e.preventDefault();
+            const userMessage = chatbotInput.value.trim();
+            if (!userMessage) return;
+
+            // Add user message to display
+            addChatMessage('user', userMessage);
+            chatbotInput.value = '';
+            
+            // Disable input and buttons while generating
+            chatbotInput.disabled = true;
+            loadingSpinner.style.display = 'block';
+            
+            try {
+                // Add user message to chat history
+                chatbotHistory.push({ role: "user", parts: [{ text: userMessage }] });
+
+                const payload = { contents: chatbotHistory };
+                const apiKey = ""
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+                
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const aiResponse = result.candidates[0].content.parts[0].text;
+                    addChatMessage('ai', aiResponse);
+                    // Add AI response to chat history for context
+                    chatbotHistory.push({ role: "model", parts: [{ text: aiResponse }] });
+                } else {
+                    addChatMessage('ai', "Sorry, I can't answer that right now.");
+                }
+
+            } catch (error) {
+                console.error("Error communicating with Gemini chatbot:", error);
+                addChatMessage('ai', "I'm having trouble connecting right now. Please try again later.");
+            } finally {
+                chatbotInput.disabled = false;
+                loadingSpinner.style.display = 'none';
+                chatbotInput.focus();
+            }
+        }
+        
+        /**
+         * Starts an interactive adventure story.
+         */
+        async function startAdventure() {
+            openChatbot();
+            isAdventureDisplayed = true;
+            chatbotInput.disabled = true;
+            loadingSpinner.style.display = 'block';
+            
+            const initialPrompt = `You are a very friendly storyteller for children aged 5-8. The current lesson topic is "${currentLessonTitle}". Start a very simple choose-your-own-adventure story based on this topic. The story should end with exactly two clear choices for the child, labeled 'A' and 'B'. Your response should be just the story text.`;
+            
+            chatbotHistory = [{ role: "user", parts: [{ text: initialPrompt }] }];
+            
+            try {
+                const payload = { contents: chatbotHistory };
+                const apiKey = ""
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const storyText = result.candidates[0].content.parts[0].text;
+                    addChatMessage('ai', storyText);
+                    chatbotHistory.push({ role: "model", parts: [{ text: storyText }] });
+                } else {
+                    addChatMessage('ai', "I'm sorry, I couldn't start an adventure right now. Please try again!");
+                }
+            } catch (error) {
+                console.error("Error starting adventure:", error);
+                addChatMessage('ai', "I'm having trouble starting the adventure. Please try again later.");
+            } finally {
+                chatbotInput.disabled = false;
+                loadingSpinner.style.display = 'none';
+            }
+        }
+        
+        /**
+         * Starts an emoji challenge.
+         */
+        async function startEmojiChallenge() {
+            loadingSpinner.style.display = 'block';
+            modalContent.style.display = 'none';
+            quizContainer.style.display = 'none';
+            chatbotContainer.style.display = 'none';
+            imageContainer.innerHTML = '';
+            isEmojiChallengeDisplayed = true;
+            
+            const buttons = [teachMeMoreBtn, tellStoryBtn, readAloudBtn, drawImageBtn, quizMeBtn, getHintBtn, askAIBtn, generateRhymeBtn, translateWordBtn, summarizeBtn, newLessonIdeaBtn, startAdventureBtn, emojiChallengeBtn, whatIfBtn, storyBlanksBtn];
+            buttons.forEach(btn => btn.disabled = true);
+            
+            try {
+                const prompt = `Based on the topic of "${currentLessonTitle}", create a simple, fun riddle for a child aged 5-8. The answer to the riddle should be a single, common emoji. Provide the riddle and the correct emoji answer.
+
+                Please format your response as a JSON object with the following schema:
+                { "riddle": string, "emoji_answer": string }
+                `;
+                
+                const chatHistory = [];
+                chatHistory.push({ role: "user", parts: [{ text: prompt }] });
+                const payload = {
+                    contents: chatHistory,
+                    generationConfig: {
+                        responseMimeType: "application/json",
+                        responseSchema: {
+                            type: "OBJECT",
+                            properties: {
+                                "riddle": { "type": "STRING" },
+                                "emoji_answer": { "type": "STRING" }
+                            }
+                        }
+                    }
+                };
+
+                const apiKey = "";
+                const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-05-20:generateContent?key=${apiKey}`;
+
+                const result = await fetchWithRetry(apiUrl, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                
+                if (result.candidates && result.candidates.length > 0 && result.candidates[0].content && result.candidates[0].content.parts.length > 0) {
+                    const jsonString = result.candidates[0].content.parts[0].text;
+                    const cleanedJsonString = jsonString.replace(/`$/, '');
+                    const emojiData = JSON.parse(cleanedJsonString);
+                    emojiAnswer = emojiData.emoji_answer;
+                    
+                    displayEmojiChallenge(emojiData);
+                } else {
+                    modalContent.textContent = "Oops! I couldn't generate an emoji challenge right now. Please try again.";
+                    modalContent.style.display = 'block';
+                }
+            } catch (error) {
+                console.error("Error generating emoji challenge:", error);
+                modalContent.textContent = "An error occurred while generating the emoji challenge. Please check your internet connection and try again.";
+                modalContent.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+                buttons.forEach(btn => btn.disabled = false);
+            }
+        }
+        
+        /**
+         * Displays the emoji challenge UI.
+         */
+        function displayEmojiChallenge(emojiData) {
+            quizContainer.style.display = 'flex';
+            quizQuestionEl.textContent = emojiData.riddle;
+            quizChoicesEl.innerHTML = `
+                <input type="text" id="emoji-guess" placeholder="Type your emoji guess here..." class="quiz-choice" style="width: 100%;" />
+                <button id="submit-emoji-guess" class="quiz-choice" style="width: 100%;">Submit Guess</button>
+            `;
+            quizFeedbackEl.textContent = '';
+            getHintBtn.style.display = 'none';
+            hintContainer.textContent = '';
+            
+            const submitBtn = document.getElementById('submit-emoji-guess');
+            const guessInput = document.getElementById('emoji-guess');
+            
+            submitBtn.addEventListener('click', () => {
+                const userGuess = guessInput.value.trim();
+                if (userGuess === emojiAnswer) {
+                    quizFeedbackEl.textContent = `You got it! The correct emoji is ${emojiAnswer}! 🎉`;
+                    submitBtn.disabled = true;
+                    guessInput.disabled = true;
+                } else {
+                    quizFeedbackEl.textContent = "That's not quite right. Try again!";
+                }
+            });
+        }
+        
+        // Event listener for the "Teach Me More" button
+        teachMeMoreBtn.addEventListener('click', () => {
+            const prompt = `Write a short, simple, and fun educational paragraph for a child aged 5-8 about the topic of ${currentLessonTitle}. The content should be new and different from the initial lesson. Use an encouraging and friendly tone.`;
+            generateGeminiContent(prompt, 'text');
+        });
+
+        // Event listener for the "Tell Me a Story" button
+        tellStoryBtn.addEventListener('click', () => {
+            const prompt = `Write a very short, cheerful, and simple story for a child aged 5-8. The story must be about the topic of ${currentLessonTitle}. Make the story's characters friendly and the ending happy.`;
+            generateGeminiContent(prompt, 'text');
+        });
+        
+        // Event listener for the "Read Aloud" button
+        readAloudBtn.addEventListener('click', () => {
+            let textToRead = modalContent.textContent;
+            if (isQuizDisplayed) {
+                textToRead = `${quizQuestionEl.textContent}. ${hintContainer.textContent}`;
+            }
+            if (textToRead) {
+                generateTTS(textToRead);
+            }
+        });
+        
+        // Event listener for the "Draw an Image" button
+        drawImageBtn.addEventListener('click', () => {
+            generateGeminiContent(currentLessonTitle, 'image');
+        });
+
+        // Event listener for the "Quiz Me" button
+        quizMeBtn.addEventListener('click', generateQuiz);
+
+        // Event listener for the "Get a Hint" button
+        getHintBtn.addEventListener('click', generateHint);
+
+        // Event listener for the "Ask the AI" button
+        askAIBtn.addEventListener('click', openChatbot);
+        
+        // Event listener for the chatbot form submission
+        chatbotForm.addEventListener('submit', handleChatbotMessage);
+        
+        // Event listener for the "Generate a Rhyme" button
+        generateRhymeBtn.addEventListener('click', () => {
+            const prompt = `Write a very short, simple, and cheerful rhyming poem for a child aged 5-8 about the topic of ${currentLessonTitle}.`;
+            generateGeminiContent(prompt, 'text');
+        });
+
+        // Event listener for the "Translate a Word" button
+        translateWordBtn.addEventListener('click', () => {
+            const prompt = `Translate the word "hello" into three different languages commonly spoken around the world. Present the translations in a simple, fun list for a child.`;
+            generateGeminiContent(prompt, 'text');
+        });
+        
+        // Event listener for the "Summarize Lesson" button
+        summarizeBtn.addEventListener('click', () => {
+            const prompt = `Summarize the following educational content for a child aged 5-8 in one to two simple sentences.
+            
+            Content: ${currentLessonContent}`;
+            generateGeminiContent(prompt, 'text');
+        });
+        
+        // Event listener for the "New Lesson Idea" button
+        newLessonIdeaBtn.addEventListener('click', () => {
+            const prompt = `Suggest a single, fun new lesson idea for children aged 5-8 related to the topic of ${currentLessonTitle}. The idea should include a name, a simple description, and a fun activity.`;
+            generateGeminiContent(prompt, 'text');
+        });
+        
+        // Event listener for the new "Start an Adventure" button
+        startAdventureBtn.addEventListener('click', startAdventure);
+        
+        // Event listener for the new "Emoji Challenge" button
+        emojiChallengeBtn.addEventListener('click', startEmojiChallenge);
+
+        // --- NEW FEATURES ---
+
+        // Event listener for the "What If?" button
+        whatIfBtn.addEventListener('click', () => {
+            const prompt = `Create a creative, fun, and simple "what if" scenario for a child aged 5-8 related to the topic of ${currentLessonTitle}. The scenario should be a single, interesting question to spark their imagination.`;
+            generateGeminiContent(prompt, 'text');
+        });
+
+        // Event listener for the "Story Blanks" button
+        storyBlanksBtn.addEventListener('click', () => {
+            const prompt = `Write a very short, cheerful, and simple story for a child aged 5-8. The story must be about the topic of ${currentLessonTitle}. Include three simple words that are missing and replace them with "<BLANK>" so the child can fill them in.`;
+            generateGeminiContent(prompt, 'text');
+        });
+
+        // Run function on page load
+        window.onload = function() {
+            renderLessons();
+        };
+
+    </script>
 </body>
 </html>
-
